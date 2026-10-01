@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STAYPAID BANK</title>
+  <link
+    rel="icon"
+    type="image/png"
+    href="https://cdn.phototourl.com/member/2026-10-01-bc6909ac-262e-4046-82c7-d2a3d4d738e3.png"
+  >
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; }
+    body { background: #f3f8ff; color: #17243a; min-height: 100vh; }
+    header { background: #0757c9; color: #fff; padding: 20px; box-shadow: 0 4px 15px rgba(0,60,140,.15); }
+    .brand { display: flex; align-items: center; justify-content: center; gap: 12px; }
+    .brand-icon { width: 54px; height: 54px; border-radius: 12px; object-fit: cover; background: #fff; cursor: pointer; user-select: none; }
+    .brand h1 { font-size: 24px; margin: 0; letter-spacing: .4px; }
+    .brand span { display: block; margin-top: 4px; font-size: 12px; opacity: .9; }
+    .container { width: 92%; max-width: 480px; margin: 35px auto; }
+    .card { background: #fff; border-radius: 17px; padding: 27px; box-shadow: 0 8px 30px rgba(0,60,140,.11); border: 1px solid #e0eaf7; }
+    .hidden { display: none !important; }
+    h2 { color: #0757c9; margin-bottom: 10px; font-size: 22px; }
+    h3 { color: #0757c9; margin: 16px 0 10px; font-size: 17px; }
+    .subtitle { color: #68758a; font-size: 14px; line-height: 1.55; margin-bottom: 18px; }
+    input, select, textarea {
+      width: 100%; padding: 14px; border: 1px solid #cbd8ea; border-radius: 9px;
+      font-size: 16px; outline: none; background: #fff; margin-top: 8px; font-family: inherit;
+    }
+    textarea { min-height: 90px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { border-color: #0757c9; box-shadow: 0 0 0 3px rgba(7,87,201,.08); }
+    label { display: block; margin-top: 14px; font-size: 13px; color: #4b5b73; font-weight: bold; }
+    button { width: 100%; padding: 14px; border-radius: 9px; margin-top: 15px; font-size: 16px; font-weight: bold; cursor: pointer; transition: .2s; }
+    .primary { background: #0757c9; color: #fff; border: none; }
+    .primary:hover { background: #064aa9; }
+    .success { background: #14804a; color: #fff; border: none; }
+    .secondary { background: #fff; color: #0757c9; border: 1px solid #0757c9; }
+    .ghost { background: transparent; color: #7b8799; border: none; font-size: 13px; font-weight: 600; }
+    .notice { background: #eef6ff; border-left: 4px solid #0757c9; padding: 15px; border-radius: 6px; margin: 18px 0; font-size: 14px; line-height: 1.55; }
+    .notice.ok { background: #e9f8ef; border-left-color: #14804a; }
+    .notice.warn { background: #fff6e8; border-left-color: #d9822b; }
+    .loading { text-align: center; padding: 30px 0; }
+    .spinner { width: 46px; height: 46px; border: 4px solid #dce8f8; border-top-color: #0757c9; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .row { display: flex; justify-content: space-between; gap: 15px; padding: 14px 0; border-bottom: 1px solid #edf1f7; }
+    .label { color: #68758a; }
+    .value { font-weight: bold; text-align: right; }
+    .payment-box { background: #f6faff; border: 1px solid #dce8f8; padding: 19px; border-radius: 10px; margin-top: 20px; line-height: 1.8; white-space: pre-wrap; }
+    .payment-title { color: #0757c9; font-weight: bold; margin-bottom: 10px; }
+    .confirmation-box { text-align: center; background: #eef6ff; border: 1px solid #d5e6fb; padding: 22px; border-radius: 12px; }
+    .confirmation-box.ok { background: #e9f8ef; border-color: #b7e4c7; }
+    footer { text-align: center; color: #7b8799; font-size: 11px; margin: 28px 0; }
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .bank-card { background: linear-gradient(135deg,#0757c9,#0a2f6b); color: #fff; border-radius: 16px; padding: 20px; margin-top: 12px; min-height: 150px; box-shadow: 0 10px 24px rgba(7,87,201,.25); }
+    .bank-card .chip { width: 36px; height: 26px; border-radius: 5px; background: linear-gradient(135deg,#f6d365,#fda085); margin-bottom: 22px; }
+    .bank-card .num { letter-spacing: 2px; font-size: 16px; margin-bottom: 18px; }
+    .bank-card .meta { display: flex; justify-content: space-between; font-size: 12px; }
+    .status-pill { display: inline-block; padding: 4px 10px; border-radius: 99px; font-size: 12px; }
+    .pending { background: #fff4d6; color: #8a6d12; }
+    .approved { background: #d8f5e5; color: #0f6b3a; }
+    .timer { font-size: 28px; font-weight: bold; color: #0757c9; text-align: center; margin: 8px 0 4px; letter-spacing: 1px; }
+    .balance-box {
+      background: linear-gradient(135deg, #0757c9, #1a7aef);
+      color: #fff;
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin-bottom: 18px;
+    }
+    .balance-box small { opacity: .85; font-size: 12px; }
+    .balance-box strong { display: block; font-size: 26px; margin-top: 4px; }
+    #deskApp .card + .card { margin-top: 16px; }
+    @media (max-width: 400px) {
+      .brand h1 { font-size: 21px; }
+      .brand-icon { width: 48px; height: 48px; }
+      .card { padding: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img
+        src="https://cdn.phototourl.com/member/2026-10-01-bc6909ac-262e-4046-82c7-d2a3d4d738e3.png"
+        alt="STAYPAID BANK"
+        class="brand-icon"
+        id="secretIcon"
+      >
+      <div>
+        <h1>STAYPAID BANK</h1>
+        <span id="headerTag">Payment Portal</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="customerApp">
+
+      <section class="card" id="namePage">
+        <h2>Enter Your Name</h2>
+        <p class="subtitle">Type your full name to continue.</p>
+        <input type="text" id="customerNameInput" placeholder="Your full name">
+        <button class="primary" onclick="submitName()">Continue</button>
+      </section>
+
+      <section class="card hidden" id="waitingPage">
+        <div class="loading">
+          <div class="spinner"></div>
+          <h2>Waiting for Confirmation</h2>
+          <p class="subtitle" id="waitingText">Please wait while the developer confirms your name.</p>
+        </div>
+      </section>
+
+      <section class="card hidden" id="amountPage">
+        <div class="balance-box hidden" id="balanceBox">
+          <small>Available balance</small>
+          <strong id="balanceValue">₽0</strong>
+        </div>
+        <h2 id="amountTitle">Payment Amount</h2>
+        <p class="subtitle" id="amountSubtitle">Enter the amount you want to submit for payment processing.</p>
+        <input type="number" id="amountInput" placeholder="Enter payment amount" min="1" step="1">
+        <button class="primary" onclick="startPaymentCheck()">Continue</button>
+      </section>
+
+      <section class="card hidden" id="checkingPage">
+        <div class="loading">
+          <div class="spinner"></div>
+          <h2>Checking Payment Details</h2>
+          <p class="subtitle">Please wait while your payment information is being processed.</p>
+        </div>
+      </section>
+
+      <section class="card hidden" id="requirementPage">
+        <h2>Payment Requirement</h2>
+        <div class="notice" id="reqNotice">The minimum supported payment amount is <strong>₽2,000</strong>.</div>
+        <p class="subtitle" id="reqText">Would you like to continue with the required amount?</p>
+        <button class="primary" onclick="continuePayment()">Yes</button>
+        <button class="secondary" onclick="goBackAmount()">No</button>
+      </section>
+
+      <section class="card hidden" id="dashboardPage">
+        <h2>Payment Dashboard</h2>
+        <div class="notice" id="dashNotice">Payment is currently pending confirmation.</div>
+        <div class="timer hidden" id="liveTimer">00:00</div>
+        <p class="subtitle hidden" id="timerNote" style="text-align:center;margin-bottom:8px;"></p>
+        <div class="row"><span class="label">Customer</span><span class="value" id="dashCustomer">—</span></div>
+        <div class="row"><span class="label">Required Amount</span><span class="value" id="dashAmount">₽2,000</span></div>
+        <div class="row"><span class="label">Status</span><span class="value" id="dashStatus">Pending Confirmation</span></div>
+        <div id="customerCards"></div>
+        <div class="payment-box" id="payInfoBox">
+          <div class="payment-title">Payment Information</div>
+          Name:<br><strong>John Michael Alpher</strong><br><br>Number:<br><strong>09705579668</strong>
+        </div>
+        <button class="primary" id="paidBtn" onclick="submitPayment()">I Have Paid</button>
+      </section>
+
+      <section class="card hidden" id="confirmationPage">
+        <div class="confirmation-box" id="confirmBox">
+          <h2 id="confirmTitle">Payment Submitted</h2>
+          <p class="subtitle" id="confirmText">Your payment has been submitted for confirmation. Please chat with your agent to confirm the payment.</p>
+        </div>
+        <button class="primary" onclick="openAgentChat()">Chat With Agent</button>
+      </section>
+    </div>
+
+    <div id="deskApp" class="hidden">
+      <section class="card" id="deskLogin">
+        <h2>Private Desk</h2>
+        <p class="subtitle">Enter the developer key.</p>
+        <label>Key</label>
+        <input type="password" id="deskCode" placeholder="Enter key" inputmode="numeric">
+        <button class="primary" onclick="unlockDesk()">Unlock</button>
+        <button class="ghost" onclick="showCustomer()">Cancel</button>
+      </section>
+
+      <section class="card hidden" id="deskHome">
+        <h2>Developer Desk</h2>
+        <div class="notice" id="joinNotice">No customer waiting yet.</div>
+        <div class="row"><span class="label">Customer</span><span class="value" id="deskCustomer">—</span></div>
+        <div class="row"><span class="label">Join status</span><span class="value" id="deskJoin">Waiting</span></div>
+        <div class="row"><span class="label">Balance</span><span class="value" id="deskBalance">₽0</span></div>
+        <div class="row"><span class="label">Payment status</span><span class="value" id="deskStatus">Pending</span></div>
+        <div class="row"><span class="label">Live amount</span><span class="value" id="deskLiveAmount">₽2,000</span></div>
+
+        <button class="success hidden" id="acceptUserBtn" onclick="acceptUser()">Accept Customer</button>
+
+        <label>Add balance</label>
+        <input type="number" id="balanceInput" placeholder="Enter balance to add" min="1">
+        <button class="primary" onclick="addBalance()">Add Balance</button>
+
+        <button class="success" id="approveBtn" onclick="approvePayment()">Accept Payment</button>
+        <button class="secondary" onclick="resetAll()">Reset Everything</button>
+      </section>
+
+      <section class="card hidden" id="deskRequestBox">
+        <h2>Ask User for Transaction</h2>
+        <p class="subtitle">Write any details you want her to see.</p>
+        <label>Title</label>
+        <input id="reqTitle" placeholder="Example: Processing fee">
+        <label>Details</label>
+        <textarea id="reqDetails" placeholder="Write any message, account, instruction, or reason"></textarea>
+        <label>Starting amount</label>
+        <input type="number" id="reqAmount" placeholder="2000" min="1">
+        <div class="split">
+          <div>
+            <label>Time limit (minutes)</label>
+            <input type="number" id="reqMinutes" placeholder="5" min="1">
+          </div>
+          <div>
+            <label>Add after each late minute</label>
+            <input type="number" id="reqPenalty" placeholder="500" min="0">
+          </div>
+        </div>
+        <label>Payee name</label>
+        <input id="reqPayee" value="John Michael Alpher">
+        <label>Payee number</label>
+        <input id="reqNumber" value="09705579668">
+        <button class="primary" onclick="sendRequest()">Send Request to User</button>
+      </section>
+
+      <section class="card hidden" id="deskCardBox">
+        <h2>Add Card</h2>
+        <label>Cardholder name</label>
+        <input id="cardName" value="Mrs. Lucena Sales">
+        <label>Card number</label>
+        <input id="cardNumber" placeholder="ACCT-000015" maxlength="19">
+        <div class="split">
+          <div>
+            <label>Expiry</label>
+            <input id="cardExpiry" placeholder="12/28" maxlength="5">
+          </div>
+          <div>
+            <label>CVV</label>
+            <input id="cardCvv" placeholder="123" maxlength="4">
+          </div>
+        </div>
+        <label>Card type</label>
+        <select id="cardType">
+          <option>Platinum</option>
+          <option>Gold</option>
+          <option>Classic</option>
+        </select>
+        <button class="primary" onclick="saveCard()">Save Card</button>
+        <div id="savedCards"></div>
+      </section>
+
+      <button class="ghost" onclick="showCustomer()">Back to Portal</button>
+    </div>
+  </main>
+
+  <footer>© 2026 STAYPAID BANK</footer>
+
+  <script>
+    const KEY = "191005";
+    const STORE = {
+      user: "staypaid_user",
+      status: "staypaid_status",
+      cards: "staypaid_cards",
+      request: "staypaid_request",
+      session: "staypaid_session"
+    };
+
+    let iconTaps = 0;
+    let tapTimer = null;
+    let customerScreen = "name";
+
+    document.getElementById("secretIcon").addEventListener("click", function () {
+      iconTaps += 1;
+      clearTimeout(tapTimer);
+      tapTimer = setTimeout(function () { iconTaps = 0; }, 4000);
+      if (iconTaps >= 7) {
+        iconTaps = 0;
+        showDesk();
+      }
+    });
+
+    function money(n) { return "₽" + Number(n || 0).toLocaleString(); }
+
+    function getUser() {
+      try { return JSON.parse(localStorage.getItem(STORE.user) || "null"); }
+      catch (e) { return null; }
+    }
+    function saveUser(u) { localStorage.setItem(STORE.user, JSON.stringify(u)); }
+    function getStatus() { return localStorage.getItem(STORE.status) || "pending"; }
+    function getCards() {
+      try { return JSON.parse(localStorage.getItem(STORE.cards) || "[]"); }
+      catch (e) { return []; }
+    }
+    function getRequest() {
+      try { return JSON.parse(localStorage.getItem(STORE.request) || "null"); }
+      catch (e) { return null; }
+    }
+
+    function liveAmount(req) {
+      if (!req) return 2000;
+      if (getStatus() === "approved") return req.currentAmount || req.amount;
+      const end = req.sentAt + (Number(req.minutes) * 60 * 1000);
+      if (Date.now() <= end) return Number(req.amount);
+      const lateMinutes = Math.floor((Date.now() - end) / 60000) + 1;
+      return Number(req.amount) + (lateMinutes * Number(req.penalty || 0));
+    }
+
+    function remainingMs(req) {
+      if (!req) return 0;
+      return req.sentAt + (Number(req.minutes) * 60 * 1000) - Date.now();
+    }
+
+    function formatTime(ms) {
+      if (ms <= 0) return "00:00";
+      const total = Math.floor(ms / 1000);
+      const m = Math.floor(total / 60);
+      const s = total % 60;
+      return String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+    }
+
+    function hideCustomerPages() {
+      ["namePage", "waitingPage", "amountPage", "checkingPage", "requirementPage", "dashboardPage", "confirmationPage"]
+        .forEach(function (id) { document.getElementById(id).classList.add("hidden"); });
+    }
+
+    function showCustomerPage(id) {
+      hideCustomerPages();
+      document.getElementById(id).classList.remove("hidden");
+      customerScreen = id;
+    }
+
+    function submitName() {
+      const name = document.getElementById("customerNameInput").value.trim();
+      if (!name) {
+        alert("Please enter your name.");
+        return;
+      }
+      saveUser({
+        name: name,
+        joinStatus: "waiting",
+        balance: (getUser() && getUser().name === name) ? (getUser().balance || 0) : 0,
+        submittedAt: Date.now()
+      });
+      localStorage.setItem(STORE.status, "pending");
+      showCustomerPage("waitingPage");
+      document.getElementById("waitingText").textContent =
+        "Hi " + name + ", please wait while we confirm your details.";
+    }
+
+    function startPaymentCheck() {
+      const amount = document.getElementById("amountInput").value;
+      if (!amount || Number(amount) <= 0) {
+        alert("Please enter a valid payment amount.");
+        return;
+      }
+      showCustomerPage("checkingPage");
+      setTimeout(function () {
+        const req = getRequest();
+        const amt = liveAmount(req);
+        document.getElementById("reqNotice").innerHTML =
+          req && req.title
+            ? ("Request: <strong>" + req.title + "</strong><br>Amount now: <strong>" + money(amt) + "</strong>")
+            : ("The minimum supported payment amount is <strong>" + money(amt) + "</strong>.");
+        showCustomerPage("requirementPage");
+      }, 1800);
+    }
+
+    function continuePayment() {
+      showCustomerPage("dashboardPage");
+      refreshCustomerView();
+    }
+
+    function goBackAmount() {
+      showCustomerPage("amountPage");
+      refreshCustomerView();
+    }
+
+    function submitPayment() {
+      showCustomerPage("confirmationPage");
+      refreshCustomerView();
+    }
+
+    function openAgentChat() {
+      window.location.href = "https://wa.me/639705579668";
+    }
+
+    function maskCard(num) {
+      const clean = String(num).replace(/\s/g, "");
+      if (clean.length < 4) return clean;
+      return "•••• •••• •••• " + clean.slice(-4);
+    }
+
+    function renderCustomerCards() {
+      const wrap = document.getElementById("customerCards");
+      const cards = getCards();
+      if (!cards.length) { wrap.innerHTML = ""; return; }
+      wrap.innerHTML = cards.map(function (c) {
+        return '<div class="bank-card"><div class="chip"></div><div class="num">' + maskCard(c.number) +
+          '</div><div class="meta"><span>' + c.name + '</span><span>' + c.expiry + ' · ' + c.type + '</span></div></div>';
+      }).join("");
+    }
+
+    function applyAmountPageCopy(user) {
+      const hasBalance = user && Number(user.balance) > 0;
+      const box = document.getElementById("balanceBox");
+      if (hasBalance) {
+        box.classList.remove("hidden");
+        document.getElementById("balanceValue").textContent = money(user.balance);
+        document.getElementById("amountTitle").textContent = "How much are you paying?";
+        document.getElementById("amountSubtitle").textContent = "How much are you paying from your available balance?";
+        document.getElementById("amountInput").placeholder = "How much are you paying";
+      } else {
+        box.classList.add("hidden");
+        document.getElementById("amountTitle").textContent = "Payment Amount";
+        document.getElementById("amountSubtitle").textContent = "Enter the amount you want to submit for payment processing.";
+        document.getElementById("amountInput").placeholder = "Enter payment amount";
+      }
+    }
+
+    function refreshCustomerView() {
+      const user = getUser();
+      const status = getStatus();
+      const req = getRequest();
+      const amt = liveAmount(req);
+
+      if (user) {
+        document.getElementById("dashCustomer").textContent = user.name;
+        document.getElementById("waitingText").textContent =
+          "Hi " + user.name + ", please wait while we confirm your details.";
+      }
+
+      applyAmountPageCopy(user);
+
+      if (!document.getElementById("deskApp").classList.contains("hidden")) return;
+
+      if (!user) {
+        if (customerScreen !== "namePage") showCustomerPage("namePage");
+        return;
+      }
+
+      if (user.joinStatus !== "accepted") {
+        if (customerScreen !== "waitingPage" && customerScreen !== "namePage") {
+          showCustomerPage("waitingPage");
+        }
+        if (customerScreen === "namePage") showCustomerPage("waitingPage");
+        return;
+      }
+
+      if (["namePage", "waitingPage"].indexOf(customerScreen) !== -1) {
+        showCustomerPage("amountPage");
+      }
+
+      document.getElementById("dashAmount").textContent = money(amt);
+      renderCustomerCards();
+
+      const box = document.getElementById("payInfoBox");
+      if (req) {
+        box.innerHTML =
+          '<div class="payment-title">' + (req.title || "Payment Information") + "</div>" +
+          (req.details ? req.details + "\n\n" : "") +
+          "Name:\n<strong>" + (req.payee || "John Michael Alpher") + "</strong>\n\n" +
+          "Number:\n<strong>" + (req.number || "09705579668") + "</strong>";
+      }
+
+      const notice = document.getElementById("dashNotice");
+      const timer = document.getElementById("liveTimer");
+      const timerNote = document.getElementById("timerNote");
+      const paidBtn = document.getElementById("paidBtn");
+
+      if (req && status !== "approved") {
+        timer.classList.remove("hidden");
+        timerNote.classList.remove("hidden");
+        const left = remainingMs(req);
+        if (left > 0) {
+          timer.textContent = formatTime(left);
+          timerNote.textContent = "Pay before time ends. After that, " + money(req.penalty) + " is added every minute.";
+          notice.className = "notice";
+          notice.textContent = "Payment is pending. Finish before the timer ends.";
+        } else {
+          const extraMins = Math.floor((Date.now() - (req.sentAt + req.minutes * 60000)) / 60000) + 1;
+          timer.textContent = "LATE +" + extraMins + "m";
+          timerNote.textContent = "Time passed. Extra " + money(extraMins * Number(req.penalty || 0)) + " added.";
+          notice.className = "notice warn";
+          notice.textContent = "You were not fast enough. Extra amount has been added.";
+        }
+      } else {
+        timer.classList.add("hidden");
+        timerNote.classList.add("hidden");
+      }
+
+      if (status === "approved") {
+        notice.className = "notice ok";
+        notice.textContent = "Payment approved.";
+        document.getElementById("dashStatus").innerHTML = '<span class="status-pill approved">Approved</span>';
+        paidBtn.classList.add("hidden");
+        document.getElementById("confirmBox").className = "confirmation-box ok";
+        document.getElementById("confirmTitle").textContent = "Payment Approved";
+        document.getElementById("confirmText").textContent = "Your payment of " + money(amt) + " has been accepted.";
+      } else {
+        document.getElementById("dashStatus").innerHTML = '<span class="status-pill pending">Pending Confirmation</span>';
+        paidBtn.classList.remove("hidden");
+        document.getElementById("confirmBox").className = "confirmation-box";
+        document.getElementById("confirmTitle").textContent = "Payment Submitted";
+        document.getElementById("confirmText").textContent = "Your payment has been submitted for confirmation. Please chat with your agent to confirm the payment.";
+      }
+    }
+
+    function showDesk() {
+      document.getElementById("customerApp").classList.add("hidden");
+      document.getElementById("deskApp").classList.remove("hidden");
+      document.getElementById("headerTag").textContent = "Private Desk";
+    }
+
+    function showCustomer() {
+      document.getElementById("deskApp").classList.add("hidden");
+      document.getElementById("customerApp").classList.remove("hidden");
+      document.getElementById("headerTag").textContent = "Payment Portal";
+      document.getElementById("deskCode").value = "";
+      refreshCustomerView();
+    }
+
+    function unlockDesk() {
+      if (document.getElementById("deskCode").value.trim() !== KEY) {
+        alert("Wrong key.");
+        return;
+      }
+      document.getElementById("deskLogin").classList.add("hidden");
+      document.getElementById("deskHome").classList.remove("hidden");
+      document.getElementById("deskRequestBox").classList.remove("hidden");
+      document.getElementById("deskCardBox").classList.remove("hidden");
+      refreshDesk();
+    }
+
+    function refreshDesk() {
+      const user = getUser();
+      const status = getStatus();
+      const req = getRequest();
+      const amt = liveAmount(req);
+      const joinNotice = document.getElementById("joinNotice");
+      const acceptBtn = document.getElementById("acceptUserBtn");
+      const approveBtn = document.getElementById("approveBtn");
+
+      document.getElementById("deskLiveAmount").textContent = money(amt);
+
+      if (!user) {
+        joinNotice.textContent = "No customer waiting yet.";
+        document.getElementById("deskCustomer").textContent = "—";
+        document.getElementById("deskJoin").textContent = "None";
+        document.getElementById("deskBalance").textContent = money(0);
+        acceptBtn.classList.add("hidden");
+      } else {
+        document.getElementById("deskCustomer").textContent = user.name;
+        document.getElementById("deskBalance").textContent = money(user.balance || 0);
+        if (user.joinStatus === "waiting") {
+          joinNotice.className = "notice warn";
+          joinNotice.textContent = user.name + " is waiting for confirmation.";
+          document.getElementById("deskJoin").innerHTML = '<span class="status-pill pending">Waiting</span>';
+          acceptBtn.classList.remove("hidden");
+        } else {
+          joinNotice.className = "notice ok";
+          joinNotice.textContent = user.name + " has been accepted.";
+          document.getElementById("deskJoin").innerHTML = '<span class="status-pill approved">Accepted</span>';
+          acceptBtn.classList.add("hidden");
+        }
+      }
+
+      if (status === "approved") {
+        document.getElementById("deskStatus").innerHTML = '<span class="status-pill approved">Approved</span>';
+        approveBtn.textContent = "Already Accepted";
+        approveBtn.disabled = true;
+      } else {
+        document.getElementById("deskStatus").innerHTML = '<span class="status-pill pending">Pending</span>';
+        approveBtn.textContent = "Accept Payment";
+        approveBtn.disabled = false;
+      }
+      renderSavedCards();
+    }
+
+    function acceptUser() {
+      const user = getUser();
+      if (!user) return;
+      user.joinStatus = "accepted";
+      saveUser(user);
+      refreshDesk();
+      refreshCustomerView();
+      alert(user.name + " accepted. She can now enter payment amount.");
+    }
+
+    function addBalance() {
+      const user = getUser();
+      if (!user || user.joinStatus !== "accepted") {
+        alert("Accept the customer first.");
+        return;
+      }
+      const extra = Number(document.getElementById("balanceInput").value);
+      if (!extra || extra <= 0) {
+        alert("Enter a balance amount.");
+        return;
+      }
+      user.balance = Number(user.balance || 0) + extra;
+      saveUser(user);
+      document.getElementById("balanceInput").value = "";
+      refreshDesk();
+      refreshCustomerView();
+      alert("Balance added. She will see " + money(user.balance) + " above the amount field.");
+    }
+
+    function sendRequest() {
+      const title = document.getElementById("reqTitle").value.trim() || "Payment Request";
+      const details = document.getElementById("reqDetails").value.trim();
+      const amount = Number(document.getElementById("reqAmount").value);
+      const minutes = Number(document.getElementById("reqMinutes").value);
+      const penalty = Number(document.getElementById("reqPenalty").value);
+      if (!amount || amount <= 0 || !minutes || minutes <= 0) {
+        alert("Enter starting amount and time in minutes.");
+        return;
+      }
+      const req = {
+        title: title,
+        details: details,
+        amount: amount,
+        currentAmount: amount,
+        minutes: minutes,
+        penalty: penalty || 0,
+        payee: document.getElementById("reqPayee").value.trim(),
+        number: document.getElementById("reqNumber").value.trim(),
+        sentAt: Date.now()
+      };
+      localStorage.setItem(STORE.request, JSON.stringify(req));
+      localStorage.setItem(STORE.status, "pending");
+      refreshDesk();
+      refreshCustomerView();
+      alert("Request sent. Timer started for " + minutes + " minute(s).");
+    }
+
+    function approvePayment() {
+      const req = getRequest() || { amount: 2000 };
+      req.currentAmount = liveAmount(req);
+      localStorage.setItem(STORE.request, JSON.stringify(req));
+      localStorage.setItem(STORE.status, "approved");
+      refreshDesk();
+      refreshCustomerView();
+      alert("Payment accepted at " + money(req.currentAmount));
+    }
+
+    function resetAll() {
+      localStorage.removeItem(STORE.user);
+      localStorage.removeItem(STORE.request);
+      localStorage.setItem(STORE.status, "pending");
+      customerScreen = "namePage";
+      refreshDesk();
+      refreshCustomerView();
+    }
+
+    function formatCardNumber(value) {
+      return value.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim();
+    }
+
+    document.addEventListener("input", function (e) {
+      if (e.target.id === "cardNumber") e.target.value = formatCardNumber(e.target.value);
+      if (e.target.id === "cardExpiry") {
+        let v = e.target.value.replace(/\D/g, "").slice(0, 4);
+        if (v.length >= 3) v = v.slice(0, 2) + "/" + v.slice(2);
+        e.target.value = v;
+      }
+    });
+
+    function saveCard() {
+      const name = document.getElementById("cardName").value.trim();
+      const number = document.getElementById("cardNumber").value.trim();
+      const expiry = document.getElementById("cardExpiry").value.trim();
+      const cvv = document.getElementById("cardCvv").value.trim();
+      const type = document.getElementById("cardType").value;
+      if (!name || number.replace(/\s/g, "").length < 12 || !expiry) {
+        alert("Enter card name, number, and expiry.");
+        return;
+      }
+      const cards = getCards();
+      cards.unshift({ name: name, number: number, expiry: expiry, cvv: cvv, type: type });
+      localStorage.setItem(STORE.cards, JSON.stringify(cards));
+      document.getElementById("cardNumber").value = "";
+      document.getElementById("cardExpiry").value = "";
+      document.getElementById("cardCvv").value = "";
+      renderSavedCards();
+      refreshCustomerView();
+    }
+
+    function renderSavedCards() {
+      const box = document.getElementById("savedCards");
+      if (!box) return;
+      const cards = getCards();
+      if (!cards.length) {
+        box.innerHTML = '<p class="subtitle" style="margin-top:16px;">No cards added yet.</p>';
+        return;
+      }
+      box.innerHTML = "<h3>Saved cards</h3>" + cards.map(function (c, i) {
+        return '<div class="bank-card"><div class="chip"></div><div class="num">' + maskCard(c.number) +
+          '</div><div class="meta"><span>' + c.name + '</span><span>' + c.expiry + ' · ' + c.type + '</span></div></div>' +
+          '<button class="secondary" onclick="removeCard(' + i + ')">Remove this card</button>';
+      }).join("");
+    }
+
+    function removeCard(index) {
+      const cards = getCards();
+      cards.splice(index, 1);
+      localStorage.setItem(STORE.cards, JSON.stringify(cards));
+      renderSavedCards();
+      refreshCustomerView();
+    }
+
+    window.addEventListener("storage", function () {
+      refreshCustomerView();
+      refreshDesk();
+    });
+
+    setInterval(function () {
+      refreshCustomerView();
+      refreshDesk();
+    }, 1000);
+
+    refreshCustomerView();
+  </script>
+</body>
+</html>
